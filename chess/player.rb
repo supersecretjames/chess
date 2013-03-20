@@ -25,8 +25,9 @@ class HumanPlayer < Player
     gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
   end
 
-  def invalid_move
-    puts "That move was invalid."
+  def invalid_move(from, to)
+    s = "That move was invalid. Cannot move from #{from} to #{to}!"
+    puts s.colorize(:color => :red)
   end
 end
 

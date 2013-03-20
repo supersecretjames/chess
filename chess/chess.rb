@@ -11,10 +11,8 @@ class Chess #Game class
     while true
       player = turns.first
       from, to = player.make_move(board.dup)
-      from_coord = Board.chess_to_rc_notation(from)
-      to_coord = Board.chess_to_rc_notation(to)
-      if board.valid_move?(player.color, from_coord, to_coord)
-        board.move(player.color, from_coord, to_coord)
+      from_pos, to_pos = Board.chess_to_coord(from), Board.chess_to_coord(to)
+      if board.try_move?(player.color, from_pos, to_pos)
         turns.reverse!
 
         if board.checkmate?(turns.first.color) || board.draw?
@@ -22,7 +20,7 @@ class Chess #Game class
           break
         end
       else
-        player.invalid_move
+        player.invalid_move(from, to)
       end
     end
   end

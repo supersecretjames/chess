@@ -7,38 +7,34 @@ class Board
   end
 
   def self.starting_grid
-    [
-      Board.royals(:black),
+    [ Board.royals(:black),
       [Pawn.new(:black)] * 8,
       [nil] * 8,
       [nil] * 8,
       [nil] * 8,
       [nil] * 8,
       [Pawn.new(:white)] * 8,
-      Board.royals(:white)
-    ]
+      Board.royals(:white) ]
   end
 
   def self.royals(color)
-    [
-      Rook.new(color),
+    [ Rook.new(color),
       Knight.new(color),
       Bishop.new(color),
       Queen.new(color),
       King.new(color),
       Bishop.new(color),
       Knight.new(color),
-      Rook.new(color)
-    ]
+      Rook.new(color) ]
   end
 
-  def self.chess_to_rc_notation(chess)
+  def self.chess_to_coord(chess)
     row = 8 - chess[1].to_i
     col = chess[0].ord - 'a'.ord
     return row, col
   end
 
-  def self.rc_to_chess_notation(row, col)
+  def self.coord_to_chess(coord)
 
   end
 
@@ -53,31 +49,14 @@ class Board
   def valid_move?(color, from, to)
     if valid_from?(color, from) && valid_to?(color, to) && from != to
       piece = self[from]
-      piece.valid_move?(self, from, to) && ! move_into_check?(color, from, to)
+      piece.valid_move?(self, from, to) && !move_into_check?(color, from, to)
     else
       false
     end
-
-=begin
-    if Board.on_board?(from) && Board.on_board?(to) && from != to && self[from]
-      piece = self[from]
-      return false unless piece.color == player_color
-      if (self[to].nil? || self[to].color != player_color) &&
-        piece.valid_move?(self.dup, from, to) &&
-        !move_results_in_self_check?(player_color, from, to)
-        true
-      else
-        false
-      end
-    else
-      false
-    end
-=end
   end
 
   def move_into_check?(player_color, from, to)
     check_board = self.dup
-    check_board.pretty_print
     check_board.commit_move(from, to)
     check_board.check?(player_color)
   end
@@ -90,37 +69,36 @@ class Board
     coords.all? { |coord| coord.between?(0,7) }
   end
 
-  def move(player_color, from, to)  #valid move should be checked before this!
+  #returns true if move successful, else false
+  def try_move?(player_color, from, to)
     if valid_move?(player_color, from, to)
       commit_move(from, to)
+      true
     else
-      raise "InvalidMoveError"  #if called properly, this never happens
+      false
     end
   end
 
   def check?(player_color)
     king_coord = king_location(player_color)
-
-    self.each_piece_with_index do |piece, i, j|
+    self.each_piece_with_coord do |piece, coord|
       next if piece.color == player_color
-      return true if piece.valid_move?(self, [i, j], king_coord)
+      return true if piece.valid_move?(self, coord, king_coord)
     end
     false
   end
 
   def king_location(player_color)
-    self.each_piece_with_index do |piece, i, j|
-      return [i, j] if (piece.color == player_color) && (piece.is_a?(King))
+    self.each_piece_with_coord do |piece, coord|
+      return coord if (piece.color == player_color) && piece.is_a?(King)
     end
     raise "KingNotFoundError"
   end
 
-  def checkmate?(checked_player_color)  # doesn't work!
-    all_possible_moves(checked_player_color).each do |from, possible_moves|
-      possible_moves.each do |possible_move|
-        copy = self.dup
-        copy.commit_move(from, possible_move)
-        return false unless copy.check?(checked_player_color)
+  def checkmate?(checked_color)  # doesn't work!
+    all_possible_moves(checked_color).each do |from, possible_moves|
+      possible_moves.each do |pos_move|
+        return false unless move_into_check?(checked_color, from, pos_move)
       end
     end
     true
@@ -128,19 +106,19 @@ class Board
 
   def all_possible_moves(color)
     all_possible_moves = {}
-    self.each_piece_with_index do |piece, i, j|
+    self.each_piece_with_coord do |piece, coord|
       next unless piece.color == color
-      from = [i, j]
-      all_possible_moves[from] = piece.possible_moves(self.dup, color, from)
+      all_possible_moves[coord] = piece.possible_moves(self.dup, coord)
     end
     all_possible_moves
   end
 
-  def each_piece_with_index(&proc)
+  def each_piece_with_coord(&proc)
     (0...8).each do |i|
       (0...8).each do |j|
         next if self[[i,j]].nil?
-        proc.call(self[[i,j]], i, j)
+        coord = [i, j]
+        proc.call(self[coord], coord)
       end
     end
   end
@@ -150,7 +128,7 @@ class Board
   end
 
   def dup
-    Board.new(@rows.dup.map(&:dup))
+    Board.new(@rows.map(&:dup))
   end
 
   def pretty_print
@@ -160,28 +138,32 @@ class Board
     char_arr = @rows.map do |row|
       left = "#{row_index} "
       char_row = row.map do |piece|
-        s = case piece
-        when King then " ♚ "
-        when Queen then " ♛ "
-        when Rook then " ♜ "
-        when Bishop then " ♝ "
-        when Knight then " ♞ "
-        when Pawn then " ♟ "
-        else
-          "   "
-        end
-        color = :white
-        unless piece.nil?
-          piece.color == :white ? color = :light_white : color = :black
-        end
         background.reverse!
-        s.colorize(:color => color, :background => background.first)
+        piece_symbol(piece, background.first)
       end
       row_index -= 1
       background.reverse!
       left + char_row.join('')
     end
     top + char_arr.join("\n")
+  end
+
+  def piece_symbol(piece, background_color)
+    s = case piece
+      when King then " ♚ "
+      when Queen then " ♛ "
+      when Rook then " ♜ "
+      when Bishop then " ♝ "
+      when Knight then " ♞ "
+      when Pawn then " ♟ "
+      else
+        "   "
+      end
+    color = :white
+    unless piece.nil?
+      piece.color == :white ? color = :light_white : color = :black
+    end
+    s.colorize(:color => color, :background => background_color)
   end
 
   protected
