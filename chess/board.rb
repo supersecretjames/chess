@@ -6,6 +6,7 @@ class Board
     @rows = rows.nil? ? Board.starting_grid : rows
   end
 
+  # REV: This is nice. The self.royals helper reads well.
   def self.starting_grid
     [
       Board.royals(:black),
@@ -32,6 +33,7 @@ class Board
     ]
   end
 
+  # REV: Add comment with what "rc" stands for.
   def self.chess_to_rc_notation(chess)
     row = 8 - chess[1].to_i
     col = chess[0].ord - 'a'.ord
@@ -42,6 +44,11 @@ class Board
 
   end
 
+  # REV: **4** (See **3** for complimentary comment.)
+  # player looks like it's only being used for the color, but you can get this
+  # from the piece at the "from" location of the board.
+  # Not sure which is better... one way seems to let you pass one less
+  # argument, but having player.color in the code reads nicely.
   def valid_move?(player, from, to)
     if Board.on_board?(from) && Board.on_board?(to) && from != to && self[from]
       piece = self[from]
@@ -74,6 +81,7 @@ class Board
     coords.all? { |coord| coord.between?(0,7) }
   end
 
+  # REV: This method is very nice and easy to read.
   def move(player, from, to)
     if valid_move?(player, from, to)
       commit_move(from, to)
@@ -82,6 +90,7 @@ class Board
     end
   end
 
+  # REV: This method reads well too.
   def check?(player)
     king_coord = king_location(player)
     @rows.each_with_index do |row, i|
@@ -97,6 +106,7 @@ class Board
     @rows.each_with_index do |row, i|
       row.each_with_index do |piece, j|
         next if piece.nil?
+        # REV: Very nice line here with the king search.
         return [i, j] if (piece.color == player.color) && (piece.is_a?(King))
       end
     end
@@ -144,6 +154,8 @@ class Board
       left = "#{row_index} "
       char_row = row.map do |piece|
         s = case piece
+        # REV: This looks nice, but it might be better to just have the
+        # unicode chars.
         when King then piece.color == :white ? " ♔ " : " ♚ "
         when Queen then piece.color == :white ? " ♕ " : " ♛ "
         when Rook then piece.color == :white ? " ♖ " : " ♜ "
@@ -153,6 +165,7 @@ class Board
         else
           "   "
         end
+        # REV: Sounds like you're inverting colors here:
         background.reverse!
         s.colorize(:color => background.last, :background => background.first)
       end
