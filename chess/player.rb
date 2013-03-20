@@ -6,22 +6,10 @@ class Player
   def set_color(color)
     @color = color if @color.nil?
   end
-end
 
-class HumanPlayer < Player
-  def initialize(name)
-    super(name)
-  end
-
-  def make_move(board)
+  def end_game(board)
     print_board(board)
-    print "#{board.check?(self) ? "Check! " : ""}"
-    print "Your turn, #{name}! Please make a move (eg e2, e3): "
-    gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
-  end
-
-  def invalid_move
-    puts "That move was invalid."
+    puts "Checkmate! #{name} wins!"
   end
 
   def print_board(board)
@@ -29,6 +17,38 @@ class HumanPlayer < Player
   end
 end
 
+class HumanPlayer < Player
+  def make_move(board)
+    print_board(board)
+    print "#{board.check?(self.color) ? "Check! " : ""}"
+    print "Your turn, #{name}! Please make a move (eg e2, e3): "
+    gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
+  end
+
+  def invalid_move
+    puts "That move was invalid."
+  end
+end
+
 class ComputerPlayer < Player
-  #TODO!
+  def initialize
+    super("Computer")
+  end
+
+  def make_move(board)
+    all_possible_moves = board.all_possible_moves(self.color)
+    from = all_possible_moves.keys.sample
+    to = all_possible_moves[from].sample
+
+  end
+
+  def invalid_move
+  end
+
+  def print_board(board)
+  end
+
+  def end_game(board)
+  end
+
 end

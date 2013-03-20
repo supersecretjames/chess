@@ -1,5 +1,3 @@
-
-
 require './board'
 require './player'
 require './piece'
@@ -15,19 +13,19 @@ class Chess #Game class
       from, to = player.make_move(board.dup)
       from_coord = Board.chess_to_rc_notation(from)
       to_coord = Board.chess_to_rc_notation(to)
-      if board.valid_move?(player, from_coord, to_coord)
-        board.move(player, from_coord, to_coord)
+      if board.valid_move?(player.color, from_coord, to_coord)
+        board.move(player.color, from_coord, to_coord)
         turns.reverse!
-        if board.checkmate?(turns.first)
-          puts "checkmate!"
+
+        if board.checkmate?(turns.first.color) || board.draw?
+          player.end_game(board)
+          break
         end
-        break if board.checkmate?(turns.first)  #not checking for draws
       else
         player.invalid_move
       end
     end
   end
 end
-
 
 Chess.play(HumanPlayer.new("James"), HumanPlayer.new("Peter"))

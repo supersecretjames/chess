@@ -6,11 +6,11 @@ class Piece
     @color = color
   end
 
-  def possible_moves(board, player, from)
+  def possible_moves(board, player_color, from)
     possible_moves = []
     (0...8).each do |i|
       (0...8).each do |j|
-        possible_moves << [i, j] if board.valid_move?(player, from, [i ,j])
+        possible_moves << [i, j] if board.valid_move?(player_color, from, [i ,j])
       end
     end
     possible_moves
@@ -19,12 +19,18 @@ end
 
 class Pawn < Piece
   def valid_move?(board, from, to)
-    row_delta = @color == :white ? 1 : -1
-    if from[0] - to[0] == row_delta
+
+    row_delta = @color == :white ? [1, 2] : [-1, -2]   # can move 2
+
+    row_delta.pop unless (from[0] == 1 || from[0] == 6)
+
+    if row_delta.include?(from[0] - to[0])
       if from[1] == to[1]
         board[to].nil?
-      else (from[1] - to[1]).abs == 1
+      elsif (from[1] - to[1]).abs == 1
         board[to] && board[to].color != @color
+      else
+        false
       end
     else
       false
