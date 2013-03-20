@@ -19,6 +19,8 @@ class HumanPlayer < Player
     print "Your turn, #{name}! Please make a move (eg e2, e3): "
     gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
   end
+  #REV we talked about this in the office, maybe ask Ryan if there is a
+  # way to do this without passing the board?
 
   def invalid_move
     puts "That move was invalid."

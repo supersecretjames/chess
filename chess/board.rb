@@ -14,7 +14,7 @@ class Board
       [nil] * 8,
       [nil] * 8,
       [nil] * 8,
-      [nil] * 8,#[Pawn.new(:white)] * 8,
+      [Pawn.new(:white)] * 8,
       Board.royals(:white)
     ]
   end

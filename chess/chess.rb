@@ -31,3 +31,6 @@ end
 
 
 Chess.play(HumanPlayer.new("James"), HumanPlayer.new("Peter"))
+
+#REV I like how you've broken up the files, my partner and I need more
+# separation.
