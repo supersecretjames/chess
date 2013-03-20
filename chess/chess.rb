@@ -26,4 +26,4 @@ class Chess #Game class
   end
 end
 
-Chess.play(HumanPlayer.new("James"), HumanPlayer.new("Peter"))
+Chess.play(HumanPlayer.new("James"), ComputerPlayer.new)

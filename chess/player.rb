@@ -15,6 +15,11 @@ class Player
   def print_board(board)
     puts board.pretty_print
   end
+
+  def invalid_move(from, to)
+    s = "That move was invalid. Cannot move from #{from} to #{to}!"
+    puts s.colorize(:color => :red)
+  end
 end
 
 class HumanPlayer < Player
@@ -23,11 +28,6 @@ class HumanPlayer < Player
     print "#{board.check?(self.color) ? "Check! " : ""}"
     print "Your turn, #{name}! Please make a move (eg e2, e3): "
     gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
-  end
-
-  def invalid_move(from, to)
-    s = "That move was invalid. Cannot move from #{from} to #{to}!"
-    puts s.colorize(:color => :red)
   end
 end
 
@@ -40,16 +40,6 @@ class ComputerPlayer < Player
     all_possible_moves = board.all_possible_moves(self.color)
     from = all_possible_moves.keys.sample
     to = all_possible_moves[from].sample
-
+    return Board.coord_to_chess(from), Board.coord_to_chess(to)
   end
-
-  def invalid_move
-  end
-
-  def print_board(board)
-  end
-
-  def end_game(board)
-  end
-
 end

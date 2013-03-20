@@ -30,12 +30,14 @@ class Board
 
   def self.chess_to_coord(chess)
     row = 8 - chess[1].to_i
-    col = chess[0].ord - 'a'.ord
+    col = (chess[0].downcase).ord - 'a'.ord
     return row, col
   end
 
   def self.coord_to_chess(coord)
-
+    alpha = (coord[1] + 'a'.ord).chr
+    digit = (8 - coord[0]).to_s
+    alpha + digit
   end
 
   def valid_from?(player_color, from)
@@ -108,7 +110,8 @@ class Board
     all_possible_moves = {}
     self.each_piece_with_coord do |piece, coord|
       next unless piece.color == color
-      all_possible_moves[coord] = piece.possible_moves(self.dup, coord)
+      possible_moves = piece.possible_moves(self.dup, coord)
+      all_possible_moves[coord] = possible_moves unless possible_moves.empty?
     end
     all_possible_moves
   end
