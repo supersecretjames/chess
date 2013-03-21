@@ -18,7 +18,12 @@ class Piece
 end
 
 class Pawn < Piece
+  # REV: **1** Methods with (*) are nice after you study and internalize them,
+  # but it would probably be more readable if some of the conditions were
+  # abstracted so that most of the method read as something closer to English.
   def valid_move?(board, from, to)
+    # REV: Not immediately clear what [1, 2] and [-1, -2] represents, even
+    # with the comment. Perhaps write a more explanatory comment?
     row_delta = @color == :white ? [1, 2] : [-1, -2]   # can move 2
     row_delta.pop unless (from[0] == 1 && @color == :black) ||
                          (from[0] == 6 && @color == :white)
@@ -68,6 +73,7 @@ class Knight < Piece
   end
 
   protected
+  # REV: This method reads nicely.
   def valid_moves(start_pos)
     valid_moves = []
     cur_x, cur_y = start_pos

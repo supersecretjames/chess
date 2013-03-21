@@ -1,8 +1,10 @@
 class Player
   attr_reader :name, :color
+
   def initialize(name)
     @name = name
   end
+
   def set_color(color)
     @color = color if @color.nil?
   end
@@ -27,6 +29,10 @@ class HumanPlayer < Player
     print_board(board)
     print "#{board.check?(self.color) ? "Check! " : ""}"
     print "Your turn, #{name}! Please make a move (eg e2, e3): "
+    # REV: Instead of changing all non-alphanumeric characters to spaces and
+    # then splitting on spaces, you can just pass in a regex for such a match
+    # directly into split.
+    # gets.chomp.split(/[^A-Za-z0-9]+/)
     gets.chomp.gsub(/[^A-Za-z0-9]/,' ').split(' ')
   end
 end

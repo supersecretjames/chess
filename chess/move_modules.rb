@@ -12,6 +12,7 @@ module StraightMove
   end
 
   protected
+  # REV: (*) See **1**
   def line_free?(board, from, to, range_limit, line_type)
     var_idx = (line_type == :horizontal ? 1 : 0)  #index of variable field
     coords = from.dup
@@ -26,6 +27,7 @@ module StraightMove
 end
 
 module DiagonalMove
+  # REV: (*) See **1**
   def diagonal_move?(board, from, to, range_limit = 1)
     row_delta, col_delta = from[0] - to[0], from[1] - to[1]
     return false unless is_diagonal?(row_delta, col_delta, range_limit)

@@ -3,6 +3,8 @@ require 'colorize'
 
 class Board
   def initialize(rows = nil)
+    # REV: Get rid of double question mark:
+    # @rows = rows ? rows : Board.starting_grid
     @rows = rows.nil? ? Board.starting_grid : rows
   end
 
@@ -97,6 +99,7 @@ class Board
     raise "KingNotFoundError"
   end
 
+  # REV: Clean up comment since this works now!
   def checkmate?(checked_color)  # doesn't work!
     all_possible_moves(checked_color).each do |from, possible_moves|
       possible_moves.each do |pos_move|
